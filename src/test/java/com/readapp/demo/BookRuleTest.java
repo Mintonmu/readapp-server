@@ -6,9 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.readapp.demo.entity.BookRule;
 import com.readapp.demo.mapper.BookRuleMapper;
 import com.readapp.demo.yuedu.*;
-import com.readapp.demo.yuedu.adapter.BookInfoRuleAdapter;
-import com.readapp.demo.yuedu.adapter.SearchAdapter;
-import com.readapp.demo.yuedu.adapter.TocRuleAdapter;
+import com.readapp.demo.yuedu.adapter.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +48,11 @@ public class BookRuleTest {
 
 
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(BookInfoRule.class, new BookInfoRuleAdapter())
-                .registerTypeAdapter(ContentRule.class, new ContentRule())
-                .registerTypeAdapter(ExploreRule.class, new ExploreRule())
-                .registerTypeAdapter(TocRule.class, new TocRuleAdapter())
-                .registerTypeAdapter(SearchRule.class, new SearchAdapter());
+//        builder.registerTypeAdapter(BookInfoRule.class, new BookInfoRuleAdapter())
+//                .registerTypeAdapter(ContentRule.class, new ContentRuleAdapter())
+//                .registerTypeAdapter(ExploreRule.class, new ExploreAdapter())
+//                .registerTypeAdapter(TocRule.class, new TocRuleAdapter())
+//                .registerTypeAdapter(SearchRule.class, new SearchAdapter());
 
         builder.setPrettyPrinting();
         Gson gson = builder.create();

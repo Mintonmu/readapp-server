@@ -23,7 +23,7 @@ public class BookRule {
 
     /**
      * 搜索地址
-     * http://domain/?key={{ keyword}}&page={{ page }}
+     * http://domain/?key={{keyword}}&page={{page}}
      */
     public String searchAddress;
 
