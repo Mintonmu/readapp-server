@@ -1,10 +1,14 @@
 package com.readapp.demo;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.readapp.demo.entity.BookRule;
 import com.readapp.demo.mapper.BookRuleMapper;
-import com.readapp.demo.yuedu.YueDuBookSource;
+import com.readapp.demo.yuedu.*;
+import com.readapp.demo.yuedu.adapter.BookInfoRuleAdapter;
+import com.readapp.demo.yuedu.adapter.SearchAdapter;
+import com.readapp.demo.yuedu.adapter.TocRuleAdapter;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +48,17 @@ public class BookRuleTest {
         FileInputStream fileInputStream = new FileInputStream(resource.getFile().getPath());
         byte[] bytes = fileInputStream.readAllBytes();
 
-        Gson gson = new Gson();
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(BookInfoRule.class, new BookInfoRuleAdapter())
+                .registerTypeAdapter(ContentRule.class, new ContentRule())
+                .registerTypeAdapter(ExploreRule.class, new ExploreRule())
+                .registerTypeAdapter(TocRule.class, new TocRuleAdapter())
+                .registerTypeAdapter(SearchRule.class, new SearchAdapter());
+
+        builder.setPrettyPrinting();
+        Gson gson = builder.create();
+
         Type userListType = new TypeToken<ArrayList<YueDuBookSource>>() {
         }.getType();
 

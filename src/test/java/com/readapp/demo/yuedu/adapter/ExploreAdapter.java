@@ -44,37 +44,37 @@ public class ExploreAdapter extends TypeAdapter<ExploreRule> {
             if("intro".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setSourceRegex(reader.nextString());
+                exploreRule.setIntro(reader.nextString());
             }
             if("kind".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setReplaceRegex(reader.nextString());
+                exploreRule.setKind(reader.nextString());
             }
             if("lastChapter".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setImageStyle(reader.nextString());
+                exploreRule.setLastChapter(reader.nextString());
             }
             if("updateTime".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setImageStyle(reader.nextString());
+                exploreRule.setUpdateTime(reader.nextString());
             }
             if("bookUrl".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setImageStyle(reader.nextString());
+                exploreRule.setBookUrl(reader.nextString());
             }
             if("coverUrl".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setImageStyle(reader.nextString());
+                exploreRule.setCoverUrl(reader.nextString());
             }
             if("wordCount".equals(fieldname)) {
                 //move to next token
                 token = reader.peek();
-                contentRule.setImageStyle(reader.nextString());
+                exploreRule.setWordCount(reader.nextString());
             }
         }
         reader.endObject();

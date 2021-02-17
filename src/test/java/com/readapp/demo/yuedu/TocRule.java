@@ -1,5 +1,8 @@
 package com.readapp.demo.yuedu;
 
+import lombok.Data;
+
+@Data
 public class TocRule {
     private String chapterList;
     private String chapterName;
