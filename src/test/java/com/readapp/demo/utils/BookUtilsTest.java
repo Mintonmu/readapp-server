@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,17 +18,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class BookUtilsTest {
 
-    @Autowired
+    @Resource
     private BookRuleMapper bookRuleMapper;
+
+    @Autowired
+    private BookUtils bookUtils;
+
     @Test
     void searchBooks() {
     }
 
     @Test
     void testSearchBooks() throws Exception {
-        List<BookRule> bookRules = bookRuleMapper.selectList(null);
-        BookUtils bookUtils = new BookUtils();
-        
-        List<Book> books = bookUtils.searchBooks(bookRules.get(0), "赘婿", 1);
+        List<Book> books = bookUtils.searchBooks("赘婿");
+        books.forEach(System.out::println);
     }
 }

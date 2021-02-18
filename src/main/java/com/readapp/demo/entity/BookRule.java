@@ -28,9 +28,9 @@ public class BookRule {
     public String searchAddress;
 
     /**
-     * 搜索项规则
+     * 搜索项链接规则
      */
-    public String searchItemRule;
+    public String searchItemLinkRule;
 
     /**
      * 书名规则
