@@ -4,26 +4,19 @@ import com.github.pagehelper.util.StringUtil;
 import com.readapp.demo.entity.Book;
 import com.readapp.demo.entity.BookRule;
 import com.readapp.demo.mapper.BookRuleMapper;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 public class BookUtils {
 
+    private static final OkHttpClient client = new OkHttpClient();
     @Autowired
     private BookRuleMapper bookRuleMapper;
-    private static OkHttpClient client = new OkHttpClient();
 
     public List<Book> searchBooks(String keyword) {
         List<BookRule> bookRules = bookRuleMapper.selectList(null);
@@ -58,7 +51,8 @@ public class BookUtils {
         List<String> authors = items.select("td:nth-child(3)").eachText();
         List<String> times = items.select("td:nth-child(5)").eachText();
 
-        for (int i = 0 ; i< bookNames.size(); i++){
+
+        for (int i = 0; i < bookNames.size(); i++) {
             System.out.println(bookNames.get(i));
             System.out.println(links.get(i));
             System.out.println(newChapters.get(i));
@@ -69,7 +63,7 @@ public class BookUtils {
         return null;
     }
 
-    public Book extractContent(String url){
+    public Book extractContent(String url) {
         return null;
     }
 }
