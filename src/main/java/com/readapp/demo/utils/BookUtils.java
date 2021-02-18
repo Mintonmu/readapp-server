@@ -111,6 +111,13 @@ public class BookUtils {
             book.setCover(covers.get(0));
         }
 
+        //解析分类
+        if (!StringUtil.isEmpty(rule.getCategoryRule())) {
+            List<String> category = parseRule(doc, rule.getCategoryRule());
+            //获取到分类
+            book.setCategory(category.get(0));
+        }
+
         //解析简介
         if (!StringUtil.isEmpty(rule.getIntroductionRule())) {
             List<String> intro = parseRule(doc, rule.getIntroductionRule());
@@ -120,7 +127,9 @@ public class BookUtils {
 
         //解析章节名
         if (!StringUtil.isEmpty(rule.getChapterNameRule()) && !StringUtil.isEmpty(rule.getChapterLinkRule())) {
+            //获取章节名
             List<String> cnames = parseRule(doc, rule.getChapterNameRule());
+            //获取章节链接
             List<String> clinks = parseRule(doc, rule.getChapterLinkRule());
 
             if (cnames.size() != clinks.size()) {
@@ -133,7 +142,7 @@ public class BookUtils {
                 c.setName(cnames.get(i));
                 chapters.add(c);
             }
-            //获取到封面
+            //获取到章节
             book.setChapters(chapters);
         }
         return book;
@@ -163,7 +172,7 @@ public class BookUtils {
     /*
     获取正文内容
      */
-    public static String getContent(String out_web_url, BookRule rule) throws Exception {
+    public String getContent(String out_web_url, BookRule rule) throws Exception {
         Document doc = Jsoup.connect(out_web_url)
                 .userAgent(rule.getHeader())
                 .timeout(3000)

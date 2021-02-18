@@ -3,6 +3,8 @@ package com.readapp.demo.WeXin;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.IOException;
+
 public interface WxMiniApi {
 
     /**
@@ -31,5 +33,5 @@ public interface WxMiniApi {
      * 40029	     code 无效
      * 45011	     频率限制，每个用户每分钟100次
      */
-    JSONObject authCode2Session(String appId, String secret, String jsCode);
+    JSONObject authCode2Session(String appId, String secret, String jsCode) throws IOException;
 }
