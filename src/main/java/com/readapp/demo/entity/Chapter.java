@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Chapter{
-    private String name;
-    private String url;
+    private String title;
+    private String link;
 }

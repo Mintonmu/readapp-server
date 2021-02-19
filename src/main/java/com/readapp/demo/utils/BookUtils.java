@@ -8,6 +8,8 @@ import com.readapp.demo.mapper.BookRuleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
@@ -24,7 +26,7 @@ public class BookUtils {
     public List<Book> searchBooks(String keyword) throws Exception {
         List<BookRule> bookRules = bookRuleMapper.selectList(null);
         List<Book> books = new ArrayList<>();
-        for (BookRule rule: bookRules){
+        for (BookRule rule : bookRules) {
             books.addAll(searchBooks(rule, keyword, 1));
         }
         return books;
@@ -50,7 +52,7 @@ public class BookUtils {
         //字符串解析
         Document doc = Jsoup.connect(request_url)
                 .userAgent(rule.getHeader())
-                .timeout(3000)
+                .timeout(10000)
                 .get();
 
         // 获取书籍链接
@@ -58,7 +60,7 @@ public class BookUtils {
 
         //获取书籍内容
         List<Book> books = new ArrayList<>();
-        for (String link : links.subList(0, 3)) {
+        for (String link : links.subList(0, Math.min(links.size(), 3))) {
             Book book = extractContent(rule, link);
             books.add(book);
         }
@@ -73,56 +75,48 @@ public class BookUtils {
         //字符串解析
         Document doc = Jsoup.connect(url)
                 .userAgent(rule.getHeader())
-                .timeout(3000)
+                .timeout(10000)
                 .get();
-
         //解析作者名
         if (!StringUtil.isEmpty(rule.getAuthorRule())) {
             List<String> authors = parseRule(doc, rule.getAuthorRule());
             //获取到作者
-            book.setAuthor(authors.get(0));
-        }
-
-        //解析作者名
-        if (!StringUtil.isEmpty(rule.getAuthorRule())) {
-            List<String> authors = parseRule(doc, rule.getAuthorRule());
-            //获取到作者
-            book.setAuthor(authors.get(0));
+            if (authors.size() != 0) book.setAuthor(authors.get(0));
         }
 
         //解析书名
         if (!StringUtil.isEmpty(rule.getNameRule())) {
             List<String> names = parseRule(doc, rule.getNameRule());
             //获取到书名
-            book.setName(names.get(0));
+            if (names.size() != 0) book.setName(names.get(0));
         }
 
         //解析最新章节
         if (!StringUtil.isEmpty(rule.getNewChapterRule())) {
             List<String> news = parseRule(doc, rule.getNewChapterRule());
             //获取到书名
-            book.setLastChapter(news.get(0));
+            if (news.size() != 0) book.setLastChapter(news.get(0));
         }
 
         //解析封面
         if (!StringUtil.isEmpty(rule.getCoverRule())) {
             List<String> covers = parseRule(doc, rule.getCoverRule());
             //获取到封面
-            book.setCover(covers.get(0));
+            if (covers.size() != 0) book.setCover(covers.get(0));
         }
 
         //解析分类
         if (!StringUtil.isEmpty(rule.getCategoryRule())) {
             List<String> category = parseRule(doc, rule.getCategoryRule());
             //获取到分类
-            book.setCategory(category.get(0));
+            if (category.size() != 0) book.setCategory(category.get(0));
         }
 
         //解析简介
         if (!StringUtil.isEmpty(rule.getIntroductionRule())) {
             List<String> intro = parseRule(doc, rule.getIntroductionRule());
             //获取到封面
-            book.setIntro(intro.get(0));
+            if (intro.size() != 0) book.setIntro(intro.get(0));
         }
 
         //解析章节名
@@ -138,8 +132,8 @@ public class BookUtils {
             List<Chapter> chapters = new ArrayList<>();
             for (int i = 0; i < clinks.size(); i++) {
                 Chapter c = new Chapter();
-                c.setUrl(clinks.get(i));
-                c.setName(cnames.get(i));
+                c.setLink(clinks.get(i));
+                c.setTitle(cnames.get(i));
                 chapters.add(c);
             }
             //获取到章节
@@ -162,6 +156,12 @@ public class BookUtils {
         List<String> result;
         if ("text".equals(rule[1])) {
             result = doc.select(rule[0]).eachText();
+        } else if ("html".equals(rule[1])) {
+            Elements contentHtml = doc.select(rule[0]);
+            result = new ArrayList<>();
+            for (Element e : contentHtml) {
+                result.add(e.html());
+            }
         } else {
             result = doc.select(rule[0]).eachAttr(rule[1]);
         }
@@ -175,7 +175,7 @@ public class BookUtils {
     public String getContent(String out_web_url, BookRule rule) throws Exception {
         Document doc = Jsoup.connect(out_web_url)
                 .userAgent(rule.getHeader())
-                .timeout(3000)
+                .timeout(10000)
                 .get();
         List<String> content = parseRule(doc, rule.getTextRule());
         return content.size() == 0 ? "无内容" : content.get(0);

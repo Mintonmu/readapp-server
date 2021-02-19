@@ -1,13 +1,11 @@
 package com.readapp.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.readapp.demo.common.Result;
+import com.readapp.demo.common.ZhuishuChapterResult;
 import com.readapp.demo.entity.Book;
 import com.readapp.demo.entity.BookRule;
-import com.readapp.demo.entity.User;
+import com.readapp.demo.entity.ZhuishuChapter;
 import com.readapp.demo.mapper.BookRuleMapper;
 import com.readapp.demo.utils.BookUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,18 +37,22 @@ public class BookController {
     }
 
     @GetMapping("/text")
-    public Result<String> getContent(String url, Integer ruleId){
+    public ZhuishuChapterResult getContent(String url, String title,Integer ruleId){
         LambdaQueryWrapper<BookRule> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(BookRule::getId, ruleId);
         BookRule rule = bookRuleMapper.selectOne(queryWrapper);
 
-        Result<String> result = new Result<>();
+        ZhuishuChapterResult chapter = new ZhuishuChapterResult();
+        ZhuishuChapter c = new ZhuishuChapter();
         try {
-            result.ok(bookUtils.getContent(url, rule));
+            chapter.setOk(true);
+            c.setBody(bookUtils.getContent(url, rule));
+            c.setTitle(title);
+            chapter.setChapter(c);
         } catch (Exception e) {
             e.printStackTrace();
-            result.error2Msg(e.getMessage());
+            chapter.setOk(false);
         }
-        return result;
+        return chapter;
     }
 }
