@@ -25,15 +25,4 @@ public class User {
      * 
      */
     public String nickname;
-
-    /**
-     * 
-     */
-    public String bookshelf;
-
-    /**
-     * 
-     */
-    public Integer setting;
-
 }

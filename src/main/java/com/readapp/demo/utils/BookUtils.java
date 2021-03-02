@@ -1,6 +1,5 @@
 package com.readapp.demo.utils;
 
-import com.github.pagehelper.util.StringUtil;
 import com.readapp.demo.entity.Book;
 import com.readapp.demo.entity.BookRule;
 import com.readapp.demo.entity.Chapter;

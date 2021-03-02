@@ -24,43 +24,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class BookRuleTest {
-    @Autowired
+    @javax.annotation.Resource
     private BookRuleMapper bookRuleMapper;
 
-    @Test
-    public void testSelect() {
-        System.out.println(("----- selectAll method test ------"));
-        List<BookRule> bookRules = bookRuleMapper.selectList(null);
-        assert 0 == bookRules.size();
-        bookRules.forEach(System.out::println);
-    }
-
-    /**
-     * 从阅读app的json中加载规则
-     */
-    @Test
-    public void loadFromYueDuJsonArray() throws IOException {
-        String file = "test/exportBookSource.json";
-        Resource resource = new ClassPathResource(file);
-
-        FileInputStream fileInputStream = new FileInputStream(resource.getFile().getPath());
-        byte[] bytes = fileInputStream.readAllBytes();
-
-
-        GsonBuilder builder = new GsonBuilder();
-//        builder.registerTypeAdapter(BookInfoRule.class, new BookInfoRuleAdapter())
-//                .registerTypeAdapter(ContentRule.class, new ContentRuleAdapter())
-//                .registerTypeAdapter(ExploreRule.class, new ExploreAdapter())
-//                .registerTypeAdapter(TocRule.class, new TocRuleAdapter())
-//                .registerTypeAdapter(SearchRule.class, new SearchAdapter());
-
-        builder.setPrettyPrinting();
-        Gson gson = builder.create();
-
-        Type userListType = new TypeToken<ArrayList<YueDuBookSource>>() {
-        }.getType();
-
-        List<YueDuBookSource> yueDuBookSources = gson.fromJson(new String(bytes), userListType);
-        yueDuBookSources.forEach(System.out::println);
-    }
 }

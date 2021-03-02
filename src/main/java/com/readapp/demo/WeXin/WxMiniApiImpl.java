@@ -1,10 +1,9 @@
 package com.readapp.demo.WeXin;
 
 import com.alibaba.fastjson.JSONObject;
+import com.readapp.demo.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 
 @Slf4j
@@ -15,7 +14,7 @@ public class WxMiniApiImpl implements WxMiniApi {
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + secret + "&js_code=" + jsCode + "&grant_type=authorization_code";
         String str = Jsoup.connect(url).get().text();
         log.info("api/wx-mini/getSessionKey:" + str);
-        if (StringUtils.hasText(str)) {
+        if (StringUtil.isEmpty(str)) {
             return null;
         } else {
             return JSONObject.parseObject(str);
