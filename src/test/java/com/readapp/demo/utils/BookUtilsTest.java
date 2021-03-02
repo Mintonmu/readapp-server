@@ -30,7 +30,11 @@ class BookUtilsTest {
 
     @Test
     void testSearchBooks() throws Exception {
-        List<Book> books = bookUtils.searchBooks("赘婿");
+        BookRule rule = bookRuleMapper.selectById(5);
+
+        List<Book> books = bookUtils.searchBooks(rule, "赘婿");
+        System.out.println("----------------------------------");
         books.forEach(System.out::println);
+        System.out.println("----------------------------------");
     }
 }

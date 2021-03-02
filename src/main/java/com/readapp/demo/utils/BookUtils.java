@@ -13,8 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class BookUtils {
@@ -26,13 +30,26 @@ public class BookUtils {
         List<BookRule> bookRules = bookRuleMapper.selectList(null);
         List<Book> books = new ArrayList<>();
         for (BookRule rule : bookRules) {
-            books.addAll(searchBooks(rule, keyword, 1));
+            books.addAll(searchBooks(rule, keyword));
         }
         return books;
     }
 
-    public List<Book> searchBooks(BookRule rule, String keyword, Integer page) throws Exception {
+    public List<Book> searchBooks(BookRule rule, String keyword) throws Exception {
+        return this.searchBooks(rule, keyword, 1);
+    }
 
+    /**
+     * 根据规则搜索最多3本小说
+     *
+     * @param rule    规则
+     * @param keyword 关键词
+     * @param page    页数
+     * @return 书籍列表
+     * @throws Exception
+     */
+    public List<Book> searchBooks(BookRule rule, String keyword, Integer page) throws Exception {
+        int book_size = 1;
         if (StringUtil.isEmpty(rule.getSearchAddress())) {
             throw new Exception("搜索地址规则为空");
         }
@@ -44,9 +61,9 @@ public class BookUtils {
         // http://domain/?key={{keyword}}&page={{page}}
         // 替换占位符
         String request_url = rule.searchAddress
-                .replace("{{keyword}}", keyword)
+                .replace("{{keyword}}", (rule.getSearchAddress().contains("GBK") || rule.getSearchAddress().contains("gbk")) ? URLEncoder.encode(keyword, "GBK") : keyword)
                 .replace("{{page}}", String.valueOf(page));
-
+        System.out.println(request_url);
         // 发起请求返回html源码
         //字符串解析
         Document doc = Jsoup.connect(request_url)
@@ -54,12 +71,19 @@ public class BookUtils {
                 .timeout(10000)
                 .get();
 
-        // 获取书籍链接
-        List<String> links = parseRule(doc, rule.getSearchItemLinkRule());
 
+        // 获取书籍链接
+        Object[] links_post = parseRule(doc, rule.getSearchItemLinkRule()).toArray();
+        List<String> links = new ArrayList<>();
+        for (Object o : links_post) {
+            if (o.toString().startsWith("http"))
+                links.add(o.toString());
+            else
+                links.add(rule.getHost() + o);
+        }
         //获取书籍内容
         List<Book> books = new ArrayList<>();
-        for (String link : links.subList(0, Math.min(links.size(), 3))) {
+        for (String link : links.subList(0, Math.min(links.size(), book_size))) {
             Book book = extractContent(rule, link);
             books.add(book);
         }
@@ -67,6 +91,14 @@ public class BookUtils {
         return books;
     }
 
+    /**
+     * 提取书籍信息
+     *
+     * @param rule 解析规则
+     * @param url  书籍信息链接
+     * @return 书籍信息
+     * @throws Exception
+     */
     private Book extractContent(BookRule rule, String url) throws Exception {
         Book book = new Book();
 
@@ -124,14 +156,17 @@ public class BookUtils {
             List<String> cnames = parseRule(doc, rule.getChapterNameRule());
             //获取章节链接
             List<String> clinks = parseRule(doc, rule.getChapterLinkRule());
-
             if (cnames.size() != clinks.size()) {
                 throw new Exception("章节名和链接无法对应");
             }
             List<Chapter> chapters = new ArrayList<>();
             for (int i = 0; i < clinks.size(); i++) {
                 Chapter c = new Chapter();
-                c.setLink(clinks.get(i));
+                if (clinks.get(i).startsWith("http"))
+                    c.setLink(clinks.get(i));
+                else {
+                    c.setLink(rule.getHost() + clinks.get(i));
+                }
                 c.setTitle(cnames.get(i));
                 chapters.add(c);
             }
@@ -141,8 +176,13 @@ public class BookUtils {
         return book;
     }
 
-    /*
-    解析规则
+    /**
+     * 解析规则
+     *
+     * @param doc      html
+     * @param textRule 解析规则
+     * @return 解析到的内容列表
+     * @throws Exception
      */
     private static List<String> parseRule(Document doc, String textRule) throws Exception {
         // 三段式

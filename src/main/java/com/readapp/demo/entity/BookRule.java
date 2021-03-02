@@ -88,6 +88,15 @@ public class BookRule {
     public String header;
 
     /**
+     * 优先级
+     */
+    public Integer priority;
+
+    /**
+     * 前缀域名
+     */
+    public String host;
+    /**
      * 从Map中加载配置
      * @param dict
      */
